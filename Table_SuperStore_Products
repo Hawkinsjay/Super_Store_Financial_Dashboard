@@ -1,0 +1,12 @@
+/*Table created in SQLite
+
+This table stores detailed information about SuperStore products. 
+
+- TEXT is used for all columns to capture descriptive information. */
+
+CREATE TABLE "SuperStore_Products" (
+	"Product_ID"	TEXT PRIMARY KEY, -- TEXT used as field contains letters and numbers
+	"Category"	TEXT,
+	"Sub_Category"	TEXT,
+	"Product_Name"	TEXT
+);
