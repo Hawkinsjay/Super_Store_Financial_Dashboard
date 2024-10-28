@@ -1,0 +1,70 @@
+CREATE VIEW V_PwrBI_SuperStore_Annual_Sales_Metrics as 
+WITH RevenueCTE AS (
+    SELECT 
+        Row_id,
+        strftime('%Y', order_date) AS Year,
+        Customer_id, 
+		
+        -- Revenue, operational cost, and profit for each row
+        sales AS Revenue,
+        (Sales - Profit) AS OperationalCosts,
+        Profit AS AnnualProfit
+    FROM
+        SuperStore_Orders
+),
+
+AnnualMetricsCTE AS (
+    SELECT 
+        Year,
+        COUNT(DISTINCT Customer_id) AS TotalCustomers,
+        SUM(Revenue) AS AnnualRevenue,
+        SUM(OperationalCosts) AS AnnualOperationalCosts,
+        SUM(AnnualProfit) AS AnnualProfit
+    FROM 
+        RevenueCTE
+    GROUP BY 
+        Year
+)
+
+SELECT 
+    a.Year,
+    a.AnnualRevenue,
+    a.AnnualOperationalCosts,
+    a.AnnualProfit,
+    a.TotalCustomers,
+
+    -- Calculate the previous year's total customers
+    LAG(a.TotalCustomers, 1) OVER (ORDER BY a.Year) AS PreviousYearCustomers,
+
+    -- Calculate percentage increase or decrease in total customers
+    CASE 
+        WHEN LAG(a.TotalCustomers, 1) OVER (ORDER BY a.Year) IS NOT NULL 
+        THEN ROUND(((a.TotalCustomers - LAG(a.TotalCustomers, 1) OVER (ORDER BY a.Year)) * 100.0) / LAG(a.TotalCustomers, 1) OVER (ORDER BY a.Year), 2)
+        ELSE "0"
+    END AS CustomerPercentageDifference,
+
+    -- Percentage difference for revenue
+    CASE 
+        WHEN LAG(a.AnnualRevenue, 1) OVER (ORDER BY a.Year) IS NOT NULL 
+        THEN ROUND(((a.AnnualRevenue - LAG(a.AnnualRevenue, 1) OVER (ORDER BY a.Year)) * 100.0) / LAG(a.AnnualRevenue, 1) OVER (ORDER BY a.Year), 2)
+        ELSE "0"
+    END AS RevenuePercentageDifference,
+
+    -- Percentage difference for operational costs
+    CASE 
+        WHEN LAG(a.AnnualOperationalCosts, 1) OVER (ORDER BY a.Year) IS NOT NULL 
+        THEN ROUND(((a.AnnualOperationalCosts - LAG(a.AnnualOperationalCosts, 1) OVER (ORDER BY a.Year)) * 100.0) / LAG(a.AnnualOperationalCosts, 1) OVER (ORDER BY a.Year), 2)
+        ELSE "0"
+    END AS OperationalCostsPercentageDifference,
+
+    -- Percentage difference for profit
+    CASE 
+        WHEN LAG(a.AnnualProfit, 1) OVER (ORDER BY a.Year) IS NOT NULL 
+        THEN ROUND(((a.AnnualProfit - LAG(a.AnnualProfit, 1) OVER (ORDER BY a.Year)) * 100.0) / LAG(a.AnnualProfit, 1) OVER (ORDER BY a.Year), 2)
+        ELSE "0"
+    END AS ProfitPercentageDifference
+
+FROM
+    AnnualMetricsCTE a
+ORDER BY 
+    a.Year
