@@ -1,0 +1,10 @@
+/*Table created in SQLite
+
+This table stores information about SuperStore order returns. 
+
+- TEXT is used for all columns to capture descriptive information. */
+
+CREATE TABLE "SuperStore_Returns" (
+	"Order_ID"	TEXT PRIMARY KEY, --TEXT used as this field contains letters and numbers
+	"Returned"	TEXT
+);
