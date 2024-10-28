@@ -1,0 +1,21 @@
+/*Table created in SQLite
+
+This table stores detailed information about orders placed for the SuperStore. 
+
+- INTEGER is used for Row ID, Sales, Quantity, Discount and Profit as these represent whole numbers.
+- REAL is used for Sales, Discount and Profit to capture decimal numbers
+- TEXT is used for Order Date, Ship Date, Order ID, Ship Mode, Customer ID and Product ID to capture descriptive information. */
+
+CREATE TABLE "SuperStore_Orders" (
+	"Row_ID"	INTEGER PRIMARY KEY,
+	"Order_ID"	TEXT, --Order ID contains a mixture of letters and numbers
+	"Order_Date"	TEXT, --Date captured as string as SQLite does not have a specific DATE data type
+	"Ship_Date"	TEXT, --Date captured as string as SQLite does not have a specific DATE data type
+	"Ship_Mode"	TEXT,
+	"Customer_ID"	TEXT, --Customer ID contains a mixture of letters and numbers
+	"Product_ID"	TEXT, --Product ID contains a mixture of letters and numbers
+	"Sales"		REAL,
+	"Quantity"	INTEGER,
+	"Discount"	REAL,
+	"Profit"	REAL
+);
