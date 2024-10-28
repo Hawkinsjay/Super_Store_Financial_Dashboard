@@ -1,0 +1,38 @@
+CREATE VIEW V_PwrBI_SuperStore_Revenue_ProductProfitMargin AS
+WITH RankedRecords AS (
+    SELECT 
+        strftime('%Y', o.Order_Date) AS Year, 
+        p.Product_Name,
+        o.Sales AS SalePrice,
+        (o.Sales - o.Profit) AS Cost,
+        o.Profit AS Profit,
+        CASE 
+            WHEN SUM(o.Sales) > 0 THEN 
+                (SUM(o.Profit) / SUM(o.Sales)) * 100
+            ELSE 
+                0 
+        END AS Profit_Margin_Percentage,
+        ROW_NUMBER() OVER (PARTITION BY strftime('%Y', o.Order_Date) ORDER BY o.Sales DESC) AS RowNum
+    FROM 
+        SuperStore_Orders o
+    JOIN 
+        SuperStore_Products p ON o.Product_ID = p.Product_ID
+    GROUP BY 
+        p.Product_Name, Year
+    HAVING 
+        Profit_Margin_Percentage BETWEEN 5 AND 20
+)
+
+SELECT 
+    Year,
+    Product_Name,
+    SalePrice,
+    Cost,
+    Profit,
+    Profit_Margin_Percentage
+FROM 
+    RankedRecords
+WHERE 
+    RowNum <= 30  -- Limit to the top 30 records per year
+ORDER BY 
+    Year, SalePrice DESC
