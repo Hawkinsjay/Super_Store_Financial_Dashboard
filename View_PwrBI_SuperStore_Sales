@@ -1,0 +1,52 @@
+CREATE VIEW V_PwrBI_SuperStore_Sales as 
+
+WITH salesCTE AS(
+	Select 
+		Row_id,
+		ROUND(SUM(sales) OVER(PARTITION BY order_date), 2) as DailySalesTotal,
+		ROUND(SUM(sales) OVER(PARTITION BY strftime('%Y-%m', order_date)), 2) as MonthlySalesTotal,
+		ROUND(AVG(sales) OVER(PARTITION BY strftime('%Y-%m', order_date)), 2) as AvgMonthlySales,
+		ROUND(SUM(sales) OVER(PARTITION BY Customer_ID), 2) as CustLifeTimeSpend,
+		MAX(order_date) OVER(PARTITION BY Customer_ID) as LastPurchaseDate
+	FROM
+		SuperStore_Orders)
+
+Select 
+	o.row_id,
+	o.order_id,
+	strftime('%Y',o.order_date) as Year,
+    	strftime('%Y-%m',o.order_date) as Month,
+	o.order_date,
+	o.Customer_ID,
+	o.product_id,
+	p.Category,
+	p.Sub_Category,
+	p.Product_Name,
+	ROUND(o.Sales,2) as Sales_Amount,
+	o.Quantity,
+	ROUND(o.profit,2) as Profit,
+	s.DailySalesTotal,
+	s.MonthlySalesTotal,
+	s.AvgMonthlySales,
+	cd.Customer_Name,
+	s.CustLifeTimeSpend,
+	s.LastPurchaseDate,
+	cd.Age,
+	cd.Gender,
+	cd.country,
+	cd.city,
+	cd.state
+FROM
+	SuperStore_Orders o 
+JOIN
+	SuperStore_Customer_Details cd
+ON 
+	o.Customer_id = cd.Customer_ID
+JOIN
+	SuperStore_Products p
+ON	
+	o.Product_ID = p.Product_ID
+JOIN 
+	salesCTE s
+ON
+	o.Row_id = s.Row_id;
