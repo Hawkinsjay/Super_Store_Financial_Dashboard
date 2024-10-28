@@ -1,0 +1,20 @@
+/*Table created in SQLite
+
+This table stores detailed information about customers of the SuperStore. 
+Each row represents a unique customer and includes personal details and location information.
+
+- INTEGER is used for Age and Postal Code as these represent whole numbers.
+- TEXT is used for Customer ID, Gender, Segment, Country, City, State, and Region to capture descriptive information. */
+
+CREATE TABLE "SuperStore_Customer_Details" (
+	"Customer_ID"	TEXT PRIMARY KEY,   --Customer ID contains a mixture of letters and numbers
+	"Customer_Name"	TEXT,
+	"Age"		INTEGER,
+	"Gender"	TEXT,
+	"Segment"	TEXT,
+	"Country"	TEXT,
+	"City"		TEXT,
+	"State"		TEXT,
+	"Postal_Code"	INTEGER,
+	"Region"	TEXT
+);
